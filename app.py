@@ -1,10 +1,17 @@
 from flask import Flask, jsonify, request
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# Load .env when available, but don't crash if python-dotenv is not installed or no .env exists
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    # In production Render provides environment variables via the dashboard — it's fine if dotenv is missing
+    pass
 
 app = Flask(__name__)
+# Ensure SECRET_KEY comes from env in production
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'change-me')
 
 @app.route("/")
 def index():
